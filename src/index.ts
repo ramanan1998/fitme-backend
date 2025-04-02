@@ -1,6 +1,6 @@
-import express, { Request, Response } from "express";
+import express, { Request, response, Response } from "express";
 import cors from "cors";
-import multer from "multer";
+import multer, { Multer } from "multer";
 import "dotenv/config";
 
 const importDynamic = new Function('modulePath', 'return import(modulePath)');
@@ -10,7 +10,7 @@ const storage = multer.memoryStorage();
 export const handleImages = multer({
     storage: storage,
     limits: {
-        fileSize: 1 * 1024 * 1024 // 1mb
+        fileSize: 5 * 1024 * 1024 // 5mb
     },
     fileFilter: (req, file, cb) => {
         if([ "image/jpeg", "image/png", "image/tiff" ].includes(file.mimetype)){
@@ -44,13 +44,13 @@ app.get("/", (req: Request, res: Response) => {
 app.post("/api/tryon", uploadedImages, async (req: Request, res: Response) => {
     try{
 
-        const files = req.files as { [ fieldname: string ]: Express.Multer.File[] };
+        const files = req.files as { [ fieldname: string ]: Express.Multer.File[] }
 
-        const selfImage = files["selfImage"] ? files["selfImage"][0] : null;
-        const modelImage = files["modelImage"] ? files["modelImage"][0] : null;
+        const selfImage = files["selfImage"]?.[0];
+        const modelImage = files["modelImage"]?.[0];
 
         if (!selfImage || !modelImage) {
-            res.status(400).json({ message: "Both selfImage and modelImage are required." });
+            res.status(400).json({ message: "Both images are required" });
             return;
         }
 
@@ -69,7 +69,7 @@ app.post("/api/tryon", uploadedImages, async (req: Request, res: Response) => {
             modelImageBlob, 	// blob in 'Garment' Image component		
             "", // string  in 'parameter_17' Textbox component		
             true, // boolean  in 'Yes' Checkbox component		
-            false, // boolean  in 'Yes' Checkbox component		
+            true, // boolean  in 'Yes' Checkbox component		
             30, // number  in 'Denoising Steps' Number component		
             42, // number  in 'Seed' Number component
         ]);
